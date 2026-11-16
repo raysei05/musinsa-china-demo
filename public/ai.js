@@ -7,8 +7,15 @@ const aiCopy={
 Object.assign(aiCopy.ko,{lens:'카메라 렌즈 검색',cameraTitle:'카메라로 코디 찾기',cameraNote:'촬영하면 사진을 OpenAI로 보내 분석합니다.',cameraOpening:'카메라 연결 중…',capture:'촬영하고 분석하기',cameraClose:'카메라 닫기',cameraFile:'사진 파일 선택',cameraDenied:'카메라 사용이 허용되지 않았습니다. 브라우저의 카메라 권한을 확인하거나 사진 파일을 선택해 주세요.',cameraMissing:'사용 가능한 카메라가 없습니다. 사진 파일을 선택해 주세요.',cameraUnavailable:'카메라를 열지 못했습니다. 다른 앱에서 사용 중인지 확인하거나 사진 파일을 선택해 주세요.',cameraUnsupported:'이 브라우저에서는 카메라를 사용할 수 없습니다. 사진 파일을 선택해 주세요.',cameraNotReady:'카메라가 준비되지 않았습니다. 잠시 후 다시 촬영해 주세요.'});
 Object.assign(aiCopy.zh,{lens:'相机识搭',cameraTitle:'拍照查找穿搭',cameraNote:'拍摄后，照片将发送至OpenAI进行分析。',cameraOpening:'正在连接相机…',capture:'拍摄并分析',cameraClose:'关闭相机',cameraFile:'选择照片文件',cameraDenied:'相机权限未获允许，请检查浏览器权限或选择照片文件。',cameraMissing:'未找到可用相机，请选择照片文件。',cameraUnavailable:'无法打开相机，请检查是否被其他应用占用，或选择照片文件。',cameraUnsupported:'此浏览器不支持相机，请选择照片文件。',cameraNotReady:'相机尚未就绪，请稍后重试。'});
 
+Object.assign(aiCopy.ko,{chatFailed:'AI 연결에 실패했어요. 잠시 후 다시 시도해 주세요.',chatRetry:'다시 보내기',chatAuth:'API 키 인증에 실패했습니다.',chatRate:'API 사용량 또는 잔액을 확인해 주세요.',chatModel:'모델 접근 권한을 확인해 주세요.'});
+Object.assign(aiCopy.zh,{chatFailed:'AI连接失败，请稍后重试。',chatRetry:'重新发送',chatAuth:'API密钥认证失败。',chatRate:'请检查API额度或余额。',chatModel:'请检查模型访问权限。'});
+const chatBrandCatalog=[{"id":"arcteryx","name":"ARC'TERYX"},{"id":"salomon","name":"SALOMON"},{"id":"puma","name":"PUMA"},{"id":"fila","name":"FILA"},{"id":"anta","name":"ANTA"},{"id":"matinkim","name":"MATIN KIM"},{"id":"mardi","name":"Mardi Mercredi"},{"id":"girbaud","name":"Marithé François Girbaud"},{"id":"standard","name":"MUSINSA STANDARD"}];
+Object.assign(aiCopy.ko,{brandStore:'브랜드관 보기'});
+Object.assign(aiCopy.zh,{brandStore:'品牌馆'});
+Object.assign(copy.ko,{brandView:'브랜드관',brandUpcoming:'곧 입점 예정인 상품이에요.',clearBrand:'브랜드 필터 해제'});
+Object.assign(copy.zh,{brandView:'品牌馆',brandUpcoming:'商品即将上架，敬请期待。',clearBrand:'清除品牌筛选'});
 const at=k=>aiCopy[state.lang][k];
-Object.assign(state,{photoResult:null,photoError:'',chatResult:null,chatError:'',photoPreparing:false,cameraOpen:false,cameraReady:false,cameraError:''});
+Object.assign(state,{photoResult:null,photoError:'',chatResult:null,chatError:'',chatHistory:[],chatTurns:[],photoPreparing:false,cameraOpen:false,cameraReady:false,cameraError:''});
 let photoController=null,sceneController=null,uploadVersion=0;
 let cameraStream=null,cameraVersion=0,cameraReturnFocus=null;
 copy.ko.aiIntro=aiCopy.ko.intro;copy.zh.aiIntro=aiCopy.zh.intro;
@@ -89,10 +96,47 @@ async function callAI(payload,signal){
  const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.error||at('failed'));if(!data||!Array.isArray(data.items)||!Array.isArray(data.tags))throw new Error(at('failed'));return data;
 }
 analyzePhoto=async function(){if(!state.photo){toast(t('noPhoto'));return;}cancelPhoto();const controller=new AbortController();photoController=controller;state.photoBusy=true;renderAI();try{const image=state.photo;if(controller.signal.aborted)return;const result=await callAI({mode:'photo',image},controller.signal);if(photoController===controller)state.photoResult=result;}catch(e){if(photoController===controller&&e.name!=='AbortError')state.photoError=e.message||at('failed');}finally{if(photoController===controller){state.photoBusy=false;if(state.tab==='ai')renderAI();}}};
-sceneUI=function(){return `<div class="ai-label">${t('assistant')}</div>${t('prompts').map((q,i)=>`<button class="prompt" onclick="askPreset(${i})">${esc(q)} ↗</button>`).join('')}<form class="chat-form" onsubmit="event.preventDefault();askFree()"><input id="chat-input" maxlength="1000" aria-label="${t('ask')}" placeholder="${t('ask')}"><button type="submit" aria-label="${t('send')}">↑</button></form>${state.chat?`<div class="bubble-user">${esc(state.chat.text)}</div>`:''}${state.chatBusy?`<div class="loader" role="status"><span class="spinner"></span>${t('thinking')}</div>`:''}${state.chatError?apiError(state.chatError):''}${!state.chatBusy&&state.chatResult?resultUI(state.chatResult,'scene'):''}`;};
+function chatResultUI(result,index){
+ const items=result.items.map(p=>getProduct(p.id)).filter(Boolean);
+ return `<div class="chat-assistant"><div class="bubble-ai">${esc(result.reply)}</div>${items.length?`<div class="outfit-products">${items.map(p=>itemCard(p)).join('')}</div><div class="total"><span>${at('total')}</span><strong>${price(result.total)}</strong></div><button class="black-button" onclick="addChatResult(${index})">${at('add')}</button>`:''}${(result.brands||[]).length?`<div class="chat-brand-links">${result.brands.map((brand,i)=>`<button type="button" class="prompt" onclick="openChatBrand(${index},${i})">${esc(brand.name)} ${at('brandStore')} ↗</button>`).join('')}</div>`:''}${result.followups.length?`<div class="chat-followups">${result.followups.map((q,i)=>`<button type="button" class="prompt" onclick="askFollowup(${index},${i})" ${state.chatBusy?'disabled':''}>${esc(q)} ↗</button>`).join('')}</div>`:''}</div>`;
+}
+sceneUI=function(){return `<div class="ai-label">${t('assistant')}</div>${t('prompts').map((q,i)=>`<button type="button" class="prompt" onclick="askPreset(${i})" ${state.chatBusy?'disabled':''}>${esc(q)} ↗</button>`).join('')}<div class="chat-transcript" aria-live="polite">${state.chatTurns.map((turn,i)=>turn.role==='user'?`<div class="bubble-user">${esc(turn.content)}</div>`:turn.role==='assistant'?chatResultUI(turn.result,i):`<div class="bubble-ai chat-failure" role="alert"><p>${at('chatFailed')}</p>${['auth','rate_limited','forbidden','model_unavailable'].includes(turn.code)?`<p class="tiny">${at(turn.code==='auth'?'chatAuth':turn.code==='rate_limited'?'chatRate':'chatModel')}</p>`:''}<button type="button" class="prompt" onclick="retryChat(${i})" ${state.chatBusy?'disabled':''}>${at('chatRetry')}</button></div>`).join('')}${state.chatBusy?`<div class="bubble-ai chat-typing" role="status" aria-label="${t('thinking')}"><span></span><span></span><span></span></div>`:''}</div><form class="chat-form" onsubmit="event.preventDefault();askFree()"><input id="chat-input" maxlength="1000" aria-label="${t('ask')}" placeholder="${t('ask')}" ${state.chatBusy?'disabled':''}><button type="submit" aria-label="${t('send')}" ${state.chatBusy?'disabled':''}>↑</button></form>`;};
 askPreset=i=>startChat({text:t('prompts')[i]});
 askFree=function(){const value=document.getElementById('chat-input').value.trim();if(value)startChat({text:value});};
-startChat=async function(chat){sceneController?.abort();const controller=new AbortController();sceneController=controller;state.chat=chat;state.chatResult=null;state.chatError='';state.chatBusy=true;renderAI();try{const result=await callAI({mode:'scene',prompt:chat.text},controller.signal);if(sceneController===controller)state.chatResult=result;}catch(e){if(sceneController===controller&&e.name!=='AbortError')state.chatError=e.message||at('failed');}finally{if(sceneController===controller){state.chatBusy=false;if(state.tab==='ai')renderAI();}}};
+function askFollowup(index,i){const text=state.chatTurns[index]?.result?.followups[i];if(text)startChat({text});}
+function retryChat(index){
+ if(state.chatBusy)return;
+ const turn=state.chatTurns[index];if(turn?.role!=='error')return;
+ // Discard the failed turn and any later branch before resending it.
+ state.chatTurns=state.chatTurns.slice(0,index-1);
+ state.chatHistory=state.chatTurns.flatMap(turn=>turn.role==='user'?[{role:'user',content:turn.content}]:turn.role==='assistant'?[{role:'assistant',content:turn.result.reply+'\\n[items: '+turn.result.items.map(p=>p.id).join(', ')+']'}]:[]);
+ return startChat({text:turn.text});
+}
+function openChatBrand(index,i){
+ const id=state.chatTurns[index]?.result?.brands?.[i]?.id;
+ const brand=chatBrandCatalog.find(b=>b.id===id);if(!brand)return;
+ state.brandFilter=brand.name;state.query=brand.name;state.category='all';navigate('home');
+}
+function clearChatBrand(){state.brandFilter=null;state.query='';state.category='all';renderHome();}
+function addChatResult(index){const result=state.chatTurns[index]?.result;if(!result)return;[...new Set(result.items.map(p=>p.id))].filter(id=>getProduct(id)).forEach(id=>addLine(id,getProduct(id).oneSize?'ONE':'M'));render();toast(t('cartAddedAll'));}
+startChat=async function(chat){
+ const text=String(chat.text||'').trim().slice(0,1000);if(!text||state.chatBusy)return;
+ const controller=new AbortController();sceneController=controller;
+ state.chatTurns.push({role:'user',content:text});state.chatHistory.push({role:'user',content:text});state.chatBusy=true;renderAI();
+ try{
+  const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:state.chatHistory.slice(-10),lang:state.lang}),signal:controller.signal});
+  const data=await response.json().catch(()=>null);if(!response.ok)throw Object.assign(new Error('CHAT_FAILED'),{code:data?.error||'upstream'});
+  if(!data||typeof data.reply!=='string'||!Array.isArray(data.items)||!Array.isArray(data.followups)||!Array.isArray(data.brands)||!Number.isFinite(data.total))throw new Error('INVALID_RESULT');
+  if(sceneController!==controller)return;
+  state.chatTurns.push({role:'assistant',result:data});
+  state.chatHistory.push({role:'assistant',content:data.reply+'\\n[items: '+data.items.map(p=>p.id).join(', ')+'][brands: '+data.brands.map(b=>b.id).join(', ')+']'});
+  state.chatHistory=state.chatHistory.slice(-40);
+ }catch(e){
+  if(sceneController===controller){state.chatHistory.pop();state.chatTurns.push({role:'error',text,code:e.code||'network'});}
+ }finally{
+  if(sceneController===controller){state.chatBusy=false;if(state.tab==='ai'){renderAI();if(state.aiMode==='scene')document.getElementById('chat-input')?.focus();}}
+ }
+};
 function addAIResult(mode){recommendedIds(mode==='photo'?state.photoResult:state.chatResult).forEach(id=>addLine(id,getProduct(id).oneSize?'ONE':'M'));render();toast(t('cartAddedAll'));}
 addOutfit=()=>addAIResult('scene');
 

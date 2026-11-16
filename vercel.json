@@ -6,6 +6,10 @@
     "api/analyze.js": {
       "maxDuration": 60,
       "includeFiles": "lib/catalog.json"
+    },
+    "api/chat.js": {
+      "maxDuration": 60,
+      "includeFiles": "lib/catalog.json"
     }
   },
   "headers": [

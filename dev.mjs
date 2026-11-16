@@ -2,13 +2,14 @@ import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import handler from './api/analyze.js';
+import chatHandler from './api/chat.js';
 const root=resolve('public');
 const server=http.createServer(async(req,res)=>{
  try{
   const path=new URL(req.url,'http://localhost').pathname;
-  if(path==='/api/analyze'){
+  if(path==='/api/analyze'||path==='/api/chat'){
    let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>3_200_000){res.writeHead(413);res.end('{"error":"Image too large"}');return;}}
-   req.body=body;res.status=code=>(res.statusCode=code,res);res.json=value=>{res.setHeader('Content-Type','application/json');res.end(JSON.stringify(value));};return await handler(req,res);
+   req.body=body;res.status=code=>(res.statusCode=code,res);res.json=value=>{res.setHeader('Content-Type','application/json');res.end(JSON.stringify(value));};return await (path==='/api/chat'?chatHandler:handler)(req,res);
   }
   const file=resolve(root,'.'+decodeURIComponent(path==='/'?'/index.html':path));
   if(!file.startsWith(root+sep)){res.writeHead(403);return res.end();}

@@ -22,7 +22,7 @@
 .rank-box.product-photo,.outfit-item .rank-box.product-photo{width:52px;height:52px;border-radius:8px}
 .product-photo .product-number{background:#ffffffc9;padding:3px 5px;border-radius:4px;color:#444;top:8px;left:8px}
 </style>
-<link rel="stylesheet" href="/ai.css?v=camera-lens-6">
+<link rel="stylesheet" href="/ai.css?v=chat-stylist-7">
 </head>
 <body>
 <main class="stage">
@@ -79,19 +79,19 @@ function navigate(tab){state.tab=tab;state.modal=null;state.product=null;render(
 function goHome(){navigate('home')}
 
 // 03. Home screen.
-function renderHome(){document.getElementById('content').innerHTML=`<div class="home fade-in"><label class="search">${icon('search')}<input type="search" value="${esc(state.query)}" placeholder="${t('search')}" aria-label="${t('search')}" oninput="searchProducts(this.value)"></label><div class="section-head"><span class="micro">${t('edit')}</span><span class="muted">${t('issue')}</span></div><div id="banner"></div><h2 class="category-heading">${t('categories')}</h2><div class="chips">${['all','sport','designer','standard','beautyChip'].map(k=>`<button class="chip ${state.category===k?'active':''}" onclick="selectCategory('${k}')" ${k==='beautyChip'?'':`aria-pressed="${state.category===k}"`}>${t(k)}</button>`).join('')}</div><div class="section-head"><h2 class="products-title">${t('picks')}</h2><span class="muted" id="count"></span></div><div class="products" id="products"></div><p class="footnote">${t('note').replace(/\n/g,'<br>')}</p></div>`;renderBanner();renderProducts();}
+function renderHome(){document.getElementById('content').innerHTML=`<div class="home fade-in"><label class="search">${icon('search')}<input type="search" value="${esc(state.query)}" placeholder="${t('search')}" aria-label="${t('search')}" oninput="searchProducts(this.value)"></label><div class="section-head"><span class="micro">${t('edit')}</span><span class="muted">${t('issue')}</span></div><div id="banner"></div>${state.brandFilter?`<div class="brand-filter"><strong>${esc(state.brandFilter)} · ${t('brandView')}</strong><button type="button" class="back-link" onclick="clearChatBrand()" aria-label="${t('clearBrand')}">× ${t('clearBrand')}</button></div>`:''}<h2 class="category-heading">${t('categories')}</h2><div class="chips">${['all','sport','designer','standard','beautyChip'].map(k=>`<button class="chip ${state.category===k?'active':''}" onclick="selectCategory('${k}')" ${k==='beautyChip'?'':`aria-pressed="${state.category===k}"`}>${t(k)}</button>`).join('')}</div><div class="section-head"><h2 class="products-title">${t('picks')}</h2><span class="muted" id="count"></span></div><div class="products" id="products"></div><p class="footnote">${t('note').replace(/\n/g,'<br>')}</p></div>`;renderBanner();renderProducts();}
 function renderBanner(){document.getElementById('banner').innerHTML=`<button class="hero" onclick="openBanner()"><span class="kicker">${t('bannerTags')[state.banner]}</span><h2>${t('bannerTitles')[state.banner]}</h2><span class="hero-bottom">${t('bannerSubs')[state.banner]}<span class="arrow">↗</span></span></button><div class="banner-controls"><div class="dots">${[0,1,2].map(i=>`<button class="dot ${i===state.banner?'active':''}" aria-label="${state.lang==='zh'?'横幅':'배너'} ${i+1}" aria-pressed="${i===state.banner}" onclick="setBanner(${i})"></button>`).join('')}</div><div class="arrows"><button aria-label="${t('previous')}" onclick="shiftBanner(-1)">‹</button><span>0${state.banner+1} / 03</span><button aria-label="${t('next')}" onclick="shiftBanner(1)">›</button></div></div>`;}
 function setBanner(i){state.banner=i;renderBanner()}
 function shiftBanner(n){setBanner((state.banner+n+3)%3)}
 function openBanner(){if(state.banner===0)navigate('stores');else selectCategory(state.banner===1?'designer':'standard')}
-function selectCategory(cat){if(cat==='beautyChip'){navigate('beauty');return}state.category=cat;renderHome()}
-function searchProducts(value){state.query=value;renderProducts()}
-function filteredProducts(){const q=state.query.trim().toLowerCase();return products.filter(p=>(state.category==='all'||p.cat===state.category)&&(!q||`${p.brand} ${p.zh} ${p.ko}`.toLowerCase().includes(q)))}
+function selectCategory(cat){if(state.brandFilter){state.brandFilter=null;state.query='';}if(cat==='beautyChip'){navigate('beauty');return}state.category=cat;renderHome()}
+function searchProducts(value){state.brandFilter=null;state.query=value;renderProducts();document.querySelector('.brand-filter')?.remove();}
+function filteredProducts(){const q=state.query.trim().toLowerCase();if(state.brandFilter)return allProducts().filter(p=>p.id<100&&p.brand===state.brandFilter);return products.filter(p=>(state.category==='all'||p.cat===state.category)&&(!q||`${p.brand} ${p.zh} ${p.ko}`.toLowerCase().includes(q)))}
 const extraProductPhotos={"13": "/assets/c3b837157f139b197cd3.png", "14": "/assets/4a17dc8e9a5065b68eae.png", "15": "/assets/6953b847e424246726db.png"};
 Object.assign(extraProductPhotos,{"101": "/assets/9f7dd1b5a7f1bc9fa0c5.png", "102": "/assets/5e676b3985932dcf8c34.png", "103": "/assets/673d23e9d970f47815e5.png", "104": "/assets/2b92c600891cf21589bc.png", "105": "/assets/82de59e77b37d5e57864.png", "106": "/assets/9b9a315e007be82ea823.png"});
 function productPhoto(p,classes='product-visual',number=false){if(extraProductPhotos[p.id])return `<span class="${classes} product-photo extra-photo" role="img" aria-label="${esc(p[state.lang])}" style="background-image:url('${extraProductPhotos[p.id]}');background-size:cover;background-position:center">${number?`<span class="product-number" aria-hidden="true">${p.id}</span>`:''}</span>`;if(p.id<1||p.id>12)return '';const i=p.id-1;return `<span class="${classes} product-photo" role="img" aria-label="${esc(p[state.lang])}" style="--photo-x:${(i%3)*50}%;--photo-y:${Math.floor(i/3)*100/3}%">${number?`<span class="product-number" aria-hidden="true">${String(p.id).padStart(2,'0')}</span>`:''}</span>`;}
 function visual(p){return productPhoto(p,'product-visual',true)||`<div class="product-visual"><span class="product-number">${String(p.id).padStart(2,'0')}</span><span class="brand-art ${p.brand.length>17?'small':''}">${esc(p.brand)}</span><span class="visual-label">MUSINSA SELECT</span></div>`;}
-function renderProducts(){const list=filteredProducts();document.getElementById('count').textContent=list.length+' '+t('items');document.getElementById('products').innerHTML=list.length?list.map(p=>`<button class="product" onclick="openProduct(${p.id})" aria-label="${esc(p.brand+' '+p[state.lang]+' '+price(p.price))}">${visual(p)}<div class="product-brand">${esc(p.brand)}</div><div class="product-name">${p[state.lang]}</div><div class="product-price">${price(p.price)}</div></button>`).join(''):`<p class="empty">${t('empty')}</p>`;}
+function renderProducts(){const list=filteredProducts();document.getElementById('count').textContent=list.length+' '+t('items');document.getElementById('products').innerHTML=list.length?list.map(p=>`<button class="product" onclick="openProduct(${p.id})" aria-label="${esc(p.brand+' '+p[state.lang]+' '+price(p.price))}">${visual(p)}<div class="product-brand">${esc(p.brand)}</div><div class="product-name">${p[state.lang]}</div><div class="product-price">${price(p.price)}</div></button>`).join(''):`<p class="empty">${state.brandFilter?t('brandUpcoming'):t('empty')}</p>`;}
 
 // 04. Staged destination screens. Replace each renderer as development continues.
 function renderUpcoming(){const key={stores:'store',beauty:'beauty',ai:'ai'}[state.tab];document.getElementById('content').innerHTML=`<div class="placeholder fade-in"><div class="large-icon">${icon(state.tab)}</div><div class="micro">${t('stage')}</div><h2>${t(key+'Title')}</h2><p>${t('upcoming')}</p><div class="steps">${t(key+'Steps').map((s,i)=>`<div><span>0${i+1}</span>${s}</div>`).join('')}</div><button class="black-button" onclick="goHome()">${t('back')}</button></div>`;}
@@ -169,6 +169,6 @@ renderModal=function(){const el=document.getElementById('modal');if(!state.modal
 };
 render();
 </script>
-<script src="/ai.js?v=camera-lens-6"></script>
+<script src="/ai.js?v=chat-stylist-7"></script>
 </body>
 </html>
