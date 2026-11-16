@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {normalizeResult} from '../api/analyze.js';
+const bag={summary:'검은 가방',tags:['블랙','가방'],budget:null,isFashion:true,items:[{garment:'가방',color:'블랙',details:'가죽',productId:null,reason:'유사 상품 없음'}],brandSuggestions:[{brand:'matinkim',query:'MATIN KIM 黑色logo单肩包',reason:'스타일이 유사함'}]};
+test('uncatalogued bags receive canonical brand search guidance',()=>{const r=normalizeResult(bag);assert.equal(r.items[0].productId,null);assert.deepEqual(r.brandSuggestions,[{brand:'matinkim',query:'MATIN KIM 黑色标志单肩包',reason:'스타일이 유사함'}]);});
+test('dress remains unmatched instead of being filled with unrelated catalog clothes',()=>{const r=normalizeResult({...bag,items:[{...bag.items[0],garment:'원피스'}],brandSuggestions:[{brand:'mardi',query:'Mardi Mercredi 黑色连衣裙',reason:'원피스 스타일'}]});assert.equal(r.items[0].productId,null);assert.equal(r.brandSuggestions[0].brand,'mardi');});
+test('non-fashion classification discards any model-provided product or brand',()=>{const r=normalizeResult({...bag,isFashion:false,items:[{...bag.items[0],productId:1}]});assert.deepEqual(r.items,[]);assert.deepEqual(r.brandSuggestions,[]);assert.equal(r.total,0);});
+test('unknown brands, duplicates, and non-Chinese queries are removed with a two-brand maximum',()=>{const r=normalizeResult({...bag,brandSuggestions:[{brand:'nike',query:'耐克 包'},{brand:'matinkim',query:'bag'},...bag.brandSuggestions,...bag.brandSuggestions,{brand:'mardi',query:'Mardi 连衣裙'},{brand:'puma',query:'PUMA 鞋'}]});assert.deepEqual(r.brandSuggestions.map(s=>s.brand),['matinkim','mardi']);});
+test('complete local matches do not add brand suggestions',()=>{const r=normalizeResult({...bag,items:[{...bag.items[0],garment:'티셔츠',productId:1}]});assert.equal(r.total,79);assert.deepEqual(r.brandSuggestions,[]);});
