@@ -63,7 +63,25 @@ export default async function handler(req,res) {
       method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},
       body:JSON.stringify({model:process.env.OPENAI_MODEL||'gpt-4.1-mini',store:false,instructions,input:[{role:'user',content}],max_output_tokens:2200,text:{format:{type:'json_schema',name:'fashion_recommendation',strict:true,schema}}}),signal:AbortSignal.timeout(45_000)
     });
-    if(!response.ok)return error(response.status===429?429:502,response.status===429?'rate':[401,403,404].includes(response.status)?'denied':'upstream');
+    if(!response.ok) {
+      // Never return provider error text: it may contain credential fragments.
+      const authErrors = {
+        401: {
+          ko: 'OpenAI 인증 실패(401): Vercel의 OPENAI_API_KEY를 새로 발급한 키로 교체한 뒤 재배포해 주세요.',
+          zh: 'OpenAI认证失败(401)：请更新Vercel中的OPENAI_API_KEY并重新部署。'
+        },
+        403: {
+          ko: 'OpenAI 접근 거부(403): API 프로젝트·키의 Responses API 권한과 서비스 이용 가능 지역을 확인해 주세요.',
+          zh: 'OpenAI拒绝访问(403)：请检查API项目、密钥的Responses API权限及服务地区。'
+        },
+        404: {
+          ko: 'OpenAI 모델을 찾을 수 없거나 접근할 수 없습니다(404): OPENAI_MODEL 값을 확인해 주세요. 기본값은 gpt-4.1-mini입니다.',
+          zh: 'OpenAI模型不存在或无权访问(404)：请检查OPENAI_MODEL，默认值为gpt-4.1-mini。'
+        }
+      };
+      if(authErrors[response.status]) return res.status(502).json({error:authErrors[response.status][lang]});
+      return error(response.status===429?429:502,response.status===429?'rate':'upstream');
+    }
     const data=await response.json();
     if(data.status!=='completed')return error(502,'upstream');
     const output=(data.output||[]).filter(v=>v.type==='message').flatMap(v=>v.content||[]).filter(v=>v.type==='output_text').map(v=>v.text).join('');
