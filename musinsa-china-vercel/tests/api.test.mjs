@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import handler,{normalizeResult} from '../api/analyze.js';
+const image='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB';
+const result={summary:'버건디 비니와 차콜 재킷입니다.',tags:['버건디','차콜'],budget:null,items:[{garment:'비니',color:'버건디',details:'골지 니트',productId:13,reason:'색상과 종류가 유사합니다.'},{garment:'재킷',color:'차콜',details:'집업',productId:14,reason:'워싱과 형태가 유사합니다.'}]};
+function request(body,headers={},method='POST'){return {method,headers:{'content-type':'application/json',host:'demo.vercel.app',...headers},body};}
+async function run(req){const res={statusCode:200,headers:{},setHeader(k,v){this.headers[k]=v;},status(code){this.statusCode=code;return this;},json(body){this.body=body;return this;}};await handler(req,res);return res;}
+test('API validation, successful image/scene requests and provider failures',async(t)=>{
+ const oldKey=process.env.OPENAI_API_KEY,oldFetch=globalThis.fetch;
+ t.after(()=>{if(oldKey===undefined)delete process.env.OPENAI_API_KEY;else process.env.OPENAI_API_KEY=oldKey;globalThis.fetch=oldFetch;});
+ delete process.env.OPENAI_API_KEY;
+ await t.test('missing credentials gives clear setup error without fabricated results',async()=>{const r=await run(request({mode:'photo',image,lang:'ko'}));assert.equal(r.statusCode,503);assert.match(r.body.error,/OPENAI_API_KEY/);assert.equal(r.body.items,undefined);});
+ await t.test('GET, cross-origin requests and malformed input are rejected',async()=>{assert.equal((await run(request({}, {}, 'GET'))).statusCode,405);assert.equal((await run(request({mode:'scene',prompt:'룩'}, {origin:'https://attacker.invalid'}))).statusCode,403);assert.equal((await run(request('{bad'))).statusCode,400);assert.equal((await run(request({mode:'photo',image:'https://example.com/a.png'}))).statusCode,400);assert.equal((await run(request({mode:'photo',image:'data:image/png;base64,ZmFrZQ=='}))).statusCode,400);});
+ process.env.OPENAI_API_KEY='unit-test-placeholder';
+ await t.test('photo request sends actual image, left-person focus and catalog to provider',async()=>{globalThis.fetch=async(url,opts)=>{assert.equal(url,'https://api.openai.com/v1/responses');const body=JSON.parse(opts.body);assert.equal(body.store,false);assert.equal(body.input[0].content[1].image_url,image);assert.match(body.instructions,/leftmost person/);assert.match(body.instructions,/unseen shoes/);assert.equal(body.text.format.type,'json_schema');return {ok:true,json:async()=>({status:'completed',output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(result)}]}]})};};const r=await run(request({mode:'photo',image,lang:'ko',focus:'left'}));assert.equal(r.statusCode,200);assert.deepEqual(r.body.items.map(x=>x.productId),[13,14]);assert.equal(r.body.total,368);});
+ await t.test('scene request forwards user text instead of keyword preset',async()=>{globalThis.fetch=async(url,opts)=>{const body=JSON.parse(opts.body);assert.equal(body.input[0].content[0].text,'500위안 이하 등교룩');assert.match(body.instructions,/Korean/);return {ok:true,json:async()=>({status:'completed',output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(result)}]}]})};};assert.equal((await run(request({mode:'scene',prompt:'500위안 이하 등교룩',lang:'ko'}))).statusCode,200);});
+ await t.test('rate limits, incomplete/refused output and timeouts become recoverable errors',async()=>{globalThis.fetch=async()=>({ok:false,status:429});assert.equal((await run(request({mode:'scene',prompt:'룩'}))).statusCode,429);globalThis.fetch=async()=>({ok:true,json:async()=>({status:'incomplete'})});assert.equal((await run(request({mode:'scene',prompt:'룩'}))).statusCode,502);globalThis.fetch=async()=>{throw Object.assign(new Error(),{name:'TimeoutError'});};assert.equal((await run(request({mode:'scene',prompt:'룩'}))).statusCode,504);});
+});
+test('catalog filtering prevents unknown products, duplicates, beauty substitutions and overspending',()=>{
+ const data=normalizeResult({...result,budget:100,items:[{...result.items[0],productId:999},{...result.items[0],productId:101},result.items[0],result.items[0],result.items[1]]});assert.deepEqual(data.items.map(x=>x.productId),[null,null,13,null,null]);assert.equal(data.total,69);
+});
+test('no-match result preserves observations without inventing recommended products',()=>{const data=normalizeResult({...result,items:[{garment:'노란 코트',color:'노랑',details:'롱 코트',productId:null,reason:'유사 상품 없음'}]});assert.equal(data.items[0].productId,null);assert.equal(data.total,0);});

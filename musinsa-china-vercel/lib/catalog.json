@@ -1,0 +1,192 @@
+[
+  {
+    "id": 1,
+    "brand": "MUSINSA STANDARD",
+    "zh": "基础款圆领T恤",
+    "ko": "베이식 크루넥 티셔츠",
+    "price": 79,
+    "cat": "standard",
+    "visualDescription": "white basic short sleeve crewneck T-shirt"
+  },
+  {
+    "id": 2,
+    "brand": "MATIN KIM",
+    "zh": "字母Logo卫衣",
+    "ko": "레터링 로고 스웨트셔츠",
+    "price": 459,
+    "cat": "designer",
+    "visualDescription": "black crewneck sweatshirt"
+  },
+  {
+    "id": 3,
+    "brand": "MUSINSA STANDARD",
+    "zh": "宽松直筒牛仔裤",
+    "ko": "와이드 스트레이트 데님",
+    "price": 199,
+    "cat": "standard",
+    "visualDescription": "blue wide straight jeans"
+  },
+  {
+    "id": 4,
+    "brand": "Mardi Mercredi",
+    "zh": "小雏菊印花T恤",
+    "ko": "데이지 프린트 티셔츠",
+    "price": 329,
+    "cat": "designer",
+    "visualDescription": "cream daisy graphic short sleeve tee"
+  },
+  {
+    "id": 5,
+    "brand": "Marithé François Girbaud",
+    "zh": "经典Logo帽衫",
+    "ko": "클래식 로고 후디",
+    "price": 499,
+    "cat": "designer",
+    "visualDescription": "gray pullover hoodie"
+  },
+  {
+    "id": 6,
+    "brand": "ARC'TERYX",
+    "zh": "轻量防风夹克",
+    "ko": "경량 윈드브레이커",
+    "price": 2800,
+    "cat": "sport",
+    "visualDescription": "black hooded windbreaker"
+  },
+  {
+    "id": 7,
+    "brand": "SALOMON",
+    "zh": "XT-6 户外跑鞋",
+    "ko": "XT-6 아웃도어 러닝화",
+    "price": 1480,
+    "cat": "sport",
+    "visualDescription": "gray outdoor running sneakers"
+  },
+  {
+    "id": 8,
+    "brand": "PUMA",
+    "zh": "Speedcat 复古球鞋",
+    "ko": "스피드캣 레트로 스니커즈",
+    "price": 699,
+    "cat": "sport",
+    "visualDescription": "black low-top sneakers"
+  },
+  {
+    "id": 9,
+    "brand": "FILA",
+    "zh": "复古老爹鞋",
+    "ko": "레트로 청키 스니커즈",
+    "price": 599,
+    "cat": "sport",
+    "visualDescription": "white chunky sneakers"
+  },
+  {
+    "id": 10,
+    "brand": "ANTA",
+    "zh": "训练运动裤",
+    "ko": "트레이닝 팬츠",
+    "price": 229,
+    "cat": "sport",
+    "visualDescription": "black elastic cuff joggers"
+  },
+  {
+    "id": 11,
+    "brand": "MUSINSA STANDARD",
+    "zh": "日常帆布鞋",
+    "ko": "데일리 캔버스화",
+    "price": 190,
+    "cat": "aiOnly",
+    "visualDescription": "cream canvas low-top sneakers"
+  },
+  {
+    "id": 12,
+    "brand": "MUSINSA STANDARD",
+    "zh": "轻薄通勤休闲裤",
+    "ko": "라이트 출근용 슬랙스",
+    "price": 199,
+    "cat": "aiOnly",
+    "visualDescription": "black tailored straight slacks"
+  },
+  {
+    "id": 13,
+    "brand": "MUSINSA SELECT",
+    "zh": "酒红色罗纹针织帽",
+    "ko": "버건디 리브 니트 비니",
+    "price": 69,
+    "cat": "standard",
+    "oneSize": true,
+    "visualDescription": "burgundy ribbed knit cuff beanie"
+  },
+  {
+    "id": 14,
+    "brand": "MUSINSA SELECT",
+    "zh": "炭灰水洗拉链夹克",
+    "ko": "차콜 워싱 집업 재킷",
+    "price": 299,
+    "cat": "standard",
+    "visualDescription": "charcoal washed denim work zip jacket, collar, brass zipper and chest zip pocket"
+  },
+  {
+    "id": 15,
+    "brand": "MUSINSA SELECT",
+    "zh": "深灰水洗直筒牛仔裤",
+    "ko": "다크 차콜 워싱 데님 팬츠",
+    "price": 199,
+    "cat": "standard",
+    "visualDescription": "charcoal dark washed straight denim trousers"
+  },
+  {
+    "id": 101,
+    "brand": "K-BEAUTY",
+    "zh": "气垫粉底",
+    "ko": "쿠션 파운데이션",
+    "price": 129,
+    "cat": "base",
+    "visualDescription": "ivory cushion foundation"
+  },
+  {
+    "id": 102,
+    "brand": "K-BEAUTY",
+    "zh": "丝绒唇釉",
+    "ko": "벨벳 립 틴트",
+    "price": 69,
+    "cat": "lip",
+    "visualDescription": "dusty rose lip tint"
+  },
+  {
+    "id": 103,
+    "brand": "K-BEAUTY",
+    "zh": "保湿精华",
+    "ko": "수분 에센스",
+    "price": 119,
+    "cat": "skin",
+    "visualDescription": "pale sage hydrating essence"
+  },
+  {
+    "id": 104,
+    "brand": "K-BEAUTY",
+    "zh": "轻盈防晒乳",
+    "ko": "라이트 선크림",
+    "price": 89,
+    "cat": "skin",
+    "visualDescription": "ivory sunscreen tube"
+  },
+  {
+    "id": 105,
+    "brand": "K-BEAUTY",
+    "zh": "柔雾腮红",
+    "ko": "소프트 블러셔",
+    "price": 79,
+    "cat": "base",
+    "visualDescription": "peach pink powder blush"
+  },
+  {
+    "id": 106,
+    "brand": "K-BEAUTY",
+    "zh": "清新淡香水",
+    "ko": "프레시 오드투알렛",
+    "price": 159,
+    "cat": "scent",
+    "visualDescription": "clear fresh eau de toilette perfume"
+  }
+]
