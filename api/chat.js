@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 const catalog=JSON.parse(readFileSync(new URL('../lib/catalog.json',import.meta.url),'utf8')).filter(p=>p.id<100);
-export const BRANDS=[{"id":"arcteryx","name":"ARC'TERYX","group":"안타 그룹 계열","style":"고기능 아웃도어 재킷, 고프코어"},{"id":"salomon","name":"SALOMON","group":"안타 그룹 계열","style":"트레일 러닝화, 고프코어 스니커즈"},{"id":"puma","name":"PUMA","group":"안타 그룹 계열","style":"스포츠웨어, 레트로 스니커즈"},{"id":"fila","name":"FILA","group":"안타 그룹 계열","style":"레트로 스포츠웨어, 청키 스니커즈"},{"id":"anta","name":"ANTA","group":"안타 그룹","style":"운동복, 러닝화"},{"id":"matinkim","name":"MATIN KIM","group":"K디자이너","style":"로고 가방, 데일리 캐주얼"},{"id":"mardi","name":"Mardi Mercredi","group":"K디자이너","style":"데이지 꽃 프린트 티셔츠·스웨트셔츠"},{"id":"girbaud","name":"Marithé François Girbaud","group":"K디자이너","style":"로고 티셔츠, 데님 캐주얼"},{"id":"standard","name":"MUSINSA STANDARD","group":"무신사 자체 브랜드","style":"기본 아이템, 가성비"}];
+export {BRANDS} from '../lib/brands.js';
+import {BRANDS} from '../lib/brands.js';
 const brandById=new Map(BRANDS.map(b=>[b.id,b]));
 const byId=new Map(catalog.map(p=>[p.id,p]));
 const types={1:'top',2:'top',3:'bottom',4:'top',5:'top',6:'outer',7:'shoes',8:'shoes',9:'shoes',10:'bottom',11:'shoes',12:'bottom',13:'accessory',14:'outer',15:'bottom'};

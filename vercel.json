@@ -4,7 +4,7 @@
   "outputDirectory": "public",
   "functions": {
     "api/analyze.js": {
-      "maxDuration": 60,
+      "maxDuration": 180,
       "includeFiles": "lib/catalog.json"
     },
     "api/chat.js": {
