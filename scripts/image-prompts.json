@@ -1,0 +1,166 @@
+{
+  "mode": "built-in image generation",
+  "template": "Photorealistic ecommerce fashion catalog photograph. Only the named product, full item centered with generous margin; clothing front view laid flat, shoes and bags three-quarter view. Pale warm gray seamless studio backdrop, soft diffuse light, realistic texture. Square. No people, logos, text or watermarks.",
+  "items": [
+    {
+      "id": 16,
+      "subject": "plain black cotton short sleeve crewneck T-shirt"
+    },
+    {
+      "id": 17,
+      "subject": "navy and ivory horizontally striped cotton long sleeve crewneck T-shirt"
+    },
+    {
+      "id": 18,
+      "subject": "crisp white oxford cotton button down shirt"
+    },
+    {
+      "id": 19,
+      "subject": "light blue relaxed cotton button down shirt"
+    },
+    {
+      "id": 20,
+      "subject": "ivory cable knit crewneck sweater"
+    },
+    {
+      "id": 21,
+      "subject": "navy V-neck button front knit cardigan"
+    },
+    {
+      "id": 22,
+      "subject": "heather gray plain cotton crewneck sweatshirt"
+    },
+    {
+      "id": 23,
+      "subject": "plain black cotton pullover hoodie"
+    },
+    {
+      "id": 24,
+      "subject": "black fine rib knit turtleneck sweater"
+    },
+    {
+      "id": 25,
+      "subject": "white ribbed cotton tank top"
+    },
+    {
+      "id": 26,
+      "subject": "beige straight leg cotton chino trousers"
+    },
+    {
+      "id": 27,
+      "subject": "medium gray tailored wide leg slacks"
+    },
+    {
+      "id": 28,
+      "subject": "light blue washed straight leg denim jeans"
+    },
+    {
+      "id": 29,
+      "subject": "black tailored knee length Bermuda shorts"
+    },
+    {
+      "id": 30,
+      "subject": "heather gray wide leg drawstring sweatpants"
+    },
+    {
+      "id": 31,
+      "subject": "black ankle length athletic leggings"
+    },
+    {
+      "id": 32,
+      "subject": "black A-line midi skirt"
+    },
+    {
+      "id": 33,
+      "subject": "blue denim midi skirt with front slit"
+    },
+    {
+      "id": 34,
+      "subject": "black sleeveless simple midi dress"
+    },
+    {
+      "id": 35,
+      "subject": "cream belted long sleeve midi shirt dress"
+    },
+    {
+      "id": 36,
+      "subject": "beige relaxed single breasted blazer"
+    },
+    {
+      "id": 37,
+      "subject": "black short quilted puffer jacket"
+    },
+    {
+      "id": 38,
+      "subject": "beige classic double breasted belted trench coat"
+    },
+    {
+      "id": 39,
+      "subject": "navy single breasted wool long coat"
+    },
+    {
+      "id": 40,
+      "subject": "classic medium blue denim trucker jacket"
+    },
+    {
+      "id": 41,
+      "subject": "olive green nylon bomber jacket"
+    },
+    {
+      "id": 42,
+      "subject": "a pair of plain white leather low top sneakers"
+    },
+    {
+      "id": 43,
+      "subject": "a pair of black leather penny loafers"
+    },
+    {
+      "id": 44,
+      "subject": "a pair of black leather Chelsea ankle boots"
+    },
+    {
+      "id": 45,
+      "subject": "a pair of brown leather two strap flat sandals"
+    },
+    {
+      "id": 46,
+      "subject": "a pair of black leather ballet flats"
+    },
+    {
+      "id": 47,
+      "subject": "black minimal leather crescent shoulder bag"
+    },
+    {
+      "id": 48,
+      "subject": "cream cotton canvas tote bag with two handles"
+    },
+    {
+      "id": 49,
+      "subject": "black nylon everyday backpack"
+    },
+    {
+      "id": 50,
+      "subject": "brown leather compact crossbody bag"
+    },
+    {
+      "id": 51,
+      "subject": "navy cotton baseball cap"
+    },
+    {
+      "id": 52,
+      "subject": "light gray ribbed cuff knit beanie"
+    },
+    {
+      "id": 53,
+      "subject": "beige wool scarf neatly folded with fringe visible"
+    },
+    {
+      "id": 54,
+      "subject": "black leather belt with small silver rectangular buckle gently coiled"
+    },
+    {
+      "id": 55,
+      "subject": "a pair of plain white ribbed cotton crew socks"
+    }
+  ]
+}

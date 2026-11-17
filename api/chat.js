@@ -4,7 +4,7 @@ export {BRANDS} from '../lib/brands.js';
 import {BRANDS} from '../lib/brands.js';
 const brandById=new Map(BRANDS.map(b=>[b.id,b]));
 const byId=new Map(catalog.map(p=>[p.id,p]));
-const types={1:'top',2:'top',3:'bottom',4:'top',5:'top',6:'outer',7:'shoes',8:'shoes',9:'shoes',10:'bottom',11:'shoes',12:'bottom',13:'accessory',14:'outer',15:'bottom'};
+const types={1:'top',2:'top',3:'bottom',4:'top',5:'top',6:'outer',7:'shoes',8:'shoes',9:'shoes',10:'bottom',11:'shoes',12:'bottom',13:'accessory',14:'outer',15:'bottom',...Object.fromEntries(catalog.filter(p=>p.type).map(p=>[p.id,p.type]))};
 const schema={type:'object',additionalProperties:false,properties:{reply:{type:'string'},items:{type:'array',items:{type:'integer',enum:catalog.map(p=>p.id)}},followups:{type:'array',items:{type:'string'}},budget:{type:['number','null']},brands:{type:'array',items:{type:'string',enum:BRANDS.map(b=>b.id)}}},required:['reply','items','followups','budget','brands']};
 export function sanitizeMessages(history){
  if(!Array.isArray(history))return [];
