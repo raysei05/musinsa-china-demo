@@ -10,6 +10,9 @@
     "api/chat.js": {
       "maxDuration": 60,
       "includeFiles": "lib/catalog.json"
+    },
+    "api/translate.js": {
+      "maxDuration": 60
     }
   },
   "headers": [

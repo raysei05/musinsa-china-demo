@@ -33,11 +33,12 @@ function photoBrandSuggestions(result){return (result.brandSuggestions||[]).filt
 function tmallSearchURL(query){return 'https://list.tmall.com/search_product.htm?q='+encodeURIComponent(query)+'&type=p';}
 function openPhotoBrand(index){const suggestion=photoBrandSuggestions(state.photoResult||{})[index];if(suggestion)openBrandStore(suggestion.brand);}
 function resultUI(result,mode){
+ const original=result;result=translatedResult(original);if(!result)return translationLoader();
  const fashion=result.isFashion!==false;
  const ids=fashion?recommendedIds(result):[];
  const matches=fashion?result.items.filter(item=>getProduct(item.productId)):[];
  const suggestions=fashion?photoBrandSuggestions(result):[];
- return `<section class="ai-results"><h3>${at(mode==='photo'?'photoResult':'sceneResult')}</h3><div class="bubble-ai">${esc(result.summary)}</div><div class="tags">${result.tags.map(x=>`<span>${esc(x)}</span>`).join('')}</div>${matches.map(item=>{const p=getProduct(item.productId);return `<article class="detected-item"><p class="result-tier">${at('internalTier')}</p><h4>${esc(item.garment)}${item.color?' · '+esc(item.color):''}</h4><p class="subtext">${esc(item.details)}</p>${itemCard(p)}<p class="tiny">${at('approx')} · ${esc(item.reason)}</p></article>`;}).join('')}${ids.length?`<div class="total"><span>${at('total')}</span><strong>${price(ids.reduce((n,id)=>n+getProduct(id).price,0))}</strong></div>${result.budget!==null?`<p class="tiny">${at('budget')}: ${price(result.budget)}</p>`:''}<button class="black-button" onclick="addAIResult('${mode}')">${at('add')}</button>`:''}${suggestions.length?`<section class="photo-brand-suggestions"><h3>${at('brandMore')}</h3>${suggestions.map((s,i)=>{const brand=chatBrandCatalog.find(b=>b.id===s.brand);return `<article class="photo-brand-suggestion"><p class="subtext">${esc(s.reason)}</p><p class="tiny">${esc(s.query)}</p><button type="button" class="prompt" onclick="openPhotoBrand(${i})">${esc(brand.name)} ${at('brandStore')} ↗</button><a class="external-link" href="${esc(tmallSearchURL(s.query))}" target="_blank" rel="noopener noreferrer">${at('tmallSearch')} ↗</a></article>`;}).join('')}</section>`:''}${!matches.length&&!suggestions.length?`<p class="photo-tier-empty" role="status">${at('tierEmpty')}</p>`:''}<p class="tiny">${at('notice')}</p></section>`;
+ return `<section class="ai-results">${translationNotice(original)}<h3>${at(mode==='photo'?'photoResult':'sceneResult')}</h3><div class="bubble-ai">${esc(result.summary)}</div><div class="tags">${result.tags.map(x=>`<span>${esc(x)}</span>`).join('')}</div>${matches.map(item=>{const p=getProduct(item.productId);return `<article class="detected-item"><p class="result-tier">${at('internalTier')}</p><h4>${esc(item.garment)}${item.color?' · '+esc(item.color):''}</h4><p class="subtext">${esc(item.details)}</p>${itemCard(p)}<p class="tiny">${at('approx')} · ${esc(item.reason)}</p></article>`;}).join('')}${ids.length?`<div class="total"><span>${at('total')}</span><strong>${price(ids.reduce((n,id)=>n+getProduct(id).price,0))}</strong></div>${result.budget!==null?`<p class="tiny">${at('budget')}: ${price(result.budget)}</p>`:''}<button class="black-button" onclick="addAIResult('${mode}')">${at('add')}</button>`:''}${suggestions.length?`<section class="photo-brand-suggestions"><h3>${at('brandMore')}</h3>${suggestions.map((s,i)=>{const brand=chatBrandCatalog.find(b=>b.id===s.brand);return `<article class="photo-brand-suggestion"><p class="subtext">${esc(s.reason)}</p><p class="tiny">${esc(s.query)}</p><button type="button" class="prompt" onclick="openPhotoBrand(${i})">${esc(brand.name)} ${at('brandStore')} ↗</button><a class="external-link" href="${esc(tmallSearchURL(s.query))}" target="_blank" rel="noopener noreferrer">${at('tmallSearch')} ↗</a></article>`;}).join('')}</section>`:''}${!matches.length&&!suggestions.length?`<p class="photo-tier-empty" role="status">${at('tierEmpty')}</p>`:''}<p class="tiny">${at('notice')}</p></section>`;
 }
 renderAI=function(){if(state.aiMode!=='photo'&&state.cameraOpen)closeCamera(false);document.getElementById('content').innerHTML=`<div class="page fade-in"><div class="micro">YOUR EVERYDAY STYLING PARTNER</div><h2 class="page-title">${t('ai')}</h2><p class="subtext">${at('intro')}</p><div class="segmented">${['photo','scene'].map(k=>`<button class="${state.aiMode===k?'active':''}" aria-pressed="${state.aiMode===k}" onclick="state.aiMode='${k}';renderAI()">${t(k+'Mode')}</button>`).join('')}</div>${state.aiMode==='photo'?photoUI():sceneUI()}</div>`;if(state.cameraOpen&&cameraStream)attachCameraPreview();};
 photoUI=function(){const image=state.photo;return `${state.cameraOpen?cameraUI():`<button type="button" class="upload-box" aria-label="${t(image?'reset':'upload')}" onclick="document.getElementById('photo-file').click()">${image?`<img src="${esc(image)}" alt="${t('upload')}"><span class="upload-caption">${t('reset')}</span>`:`<span class="plus" aria-hidden="true">＋</span><span class="upload-caption">${t('upload')}</span>`}</button><button type="button" class="secondary-wide camera-launch" onclick="openLensCamera()">${at('lens')}</button>`}<input id="photo-file" type="file" accept="image/jpeg,image/png,image/webp" aria-label="${t('upload')}" style="display:none" onchange="uploadPhoto(this)">${image&&!state.cameraOpen&&!state.photoBusy&&!state.photoPreparing?`<button class="black-button" style="margin-top:10px" onclick="analyzePhoto()">✦ ${at(state.photoResult?'retry':'status')}</button>`:''}<p class="tiny">${at('photoNote')}</p>${state.photoError?apiError(state.photoError):''}${state.photoBusy||state.photoPreparing?`<div class="loader" role="status"><span class="spinner"></span>${state.photoPreparing?at('processing'):t('analyzing')}</div>`:state.photoResult?resultUI(state.photoResult,'photo'):''}`;};
@@ -108,15 +109,16 @@ async function callAI(payload,signal){
  let response;try{response=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,lang:state.lang}),signal});}catch(e){if(e.name==='AbortError')throw e;throw new Error(at('network'));}
  const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.error||at('failed'));if(!data||!Array.isArray(data.items)||!Array.isArray(data.tags))throw new Error(at('failed'));return data;
 }
-analyzePhoto=async function(){if(!state.photo){toast(t('noPhoto'));return;}cancelPhoto();const controller=new AbortController();photoController=controller;state.photoBusy=true;renderAI();try{const image=state.photo;if(controller.signal.aborted)return;const result=await callAI({mode:'photo',image},controller.signal);if(photoController===controller)state.photoResult=result;}catch(e){if(photoController===controller&&e.name!=='AbortError')state.photoError=e.message||at('failed');}finally{if(photoController===controller){state.photoBusy=false;if(state.tab==='ai')renderAI();}}};
+analyzePhoto=async function(){if(!state.photo){toast(t('noPhoto'));return;}cancelPhoto();const controller=new AbortController();photoController=controller;state.photoBusy=true;renderAI();try{const image=state.photo;const resultLang=state.lang;if(controller.signal.abortedreturn;const result=await callAI({mode:'photo',image},controller.signal);if(photoController===controller)state.photoResult=rememberResultLanguage(result,resultLang);}catch(e){if(photoController===controller&&e.name!=='AbortError')state.photoError=e.message||at('failed');}finally{if(photoController===controller){state.photoBusy=false;if(state.tab==='ai')renderAI();}}};
 function chatResultUI(result,index){
+ const original=result;result=translatedResult(original);if(!result)return translationLoader();
  const items=result.items.map(p=>getProduct(p.id)).filter(Boolean);
- return `<div class="chat-assistant"><div class="bubble-ai">${esc(result.reply)}</div>${items.length?`<div class="outfit-products">${items.map(p=>itemCard(p)).join('')}</div><div class="total"><span>${at('total')}</span><strong>${price(result.total)}</strong></div><button class="black-button" onclick="addChatResult(${index})">${at('add')}</button>`:''}${(result.brands||[]).length?`<div class="chat-brand-links">${result.brands.map((brand,i)=>`<button type="button" class="prompt" onclick="openChatBrand(${index},${i})">${esc(brand.name)} ${at('brandStore')} ↗</button>`).join('')}</div>`:''}${result.followups.length?`<div class="chat-followups">${result.followups.map((q,i)=>`<button type="button" class="prompt" onclick="askFollowup(${index},${i})" ${state.chatBusy?'disabled':''}>${esc(q)} ↗</button>`).join('')}</div>`:''}</div>`;
+ return `<div class="chat-assistant">${translationNotice(original)}<div class="bubble-ai">${esc(result.reply)}</div>${items.length?`<div class="outfit-products">${items.map(p=>itemCard(p)).join('')}</div><div class="total"><span>${at('total')}</span><strong>${price(result.total)}</strong></div><button class="black-button" onclick="addChatResult(${index})">${at('add')}</button>`:''}${(result.brands||[]).length?`<div class="chat-brand-links">${result.brands.map((brand,i)=>`<button type="button" class="prompt" onclick="openChatBrand(${index},${i})">${esc(brand.name)} ${at('brandStore')} ↗</button>`).join('')}</div>`:''}${result.followups.length?`<div class="chat-followups">${result.followups.map((q,i)=>`<button type="button" class="prompt" onclick="askFollowup(${index},${i})" ${state.chatBusy?'disabled':''}>${esc(q)} ↗</button>`).join('')}</div>`:''}</div>`;
 }
 sceneUI=function(){return `<div class="ai-label">${t('assistant')}</div>${t('prompts').map((q,i)=>`<button type="button" class="prompt" onclick="askPreset(${i})" ${state.chatBusy?'disabled':''}>${esc(q)} ↗</button>`).join('')}<div class="chat-transcript" aria-live="polite">${state.chatTurns.map((turn,i)=>turn.role==='user'?`<div class="bubble-user">${esc(turn.content)}</div>`:turn.role==='assistant'?chatResultUI(turn.result,i):`<div class="bubble-ai chat-failure" role="alert"><p>${at('chatFailed')}</p>${['auth','rate_limited','forbidden','model_unavailable'].includes(turn.code)?`<p class="tiny">${at(turn.code==='auth'?'chatAuth':turn.code==='rate_limited'?'chatRate':'chatModel')}</p>`:''}<button type="button" class="prompt" onclick="retryChat(${i})" ${state.chatBusy?'disabled':''}>${at('chatRetry')}</button></div>`).join('')}${state.chatBusy?`<div class="bubble-ai chat-typing" role="status" aria-label="${t('thinking')}"><span></span><span></span><span></span></div>`:''}</div><form class="chat-form" onsubmit="event.preventDefault();askFree()"><input id="chat-input" maxlength="1000" aria-label="${t('ask')}" placeholder="${t('ask')}" ${state.chatBusy?'disabled':''}><button type="submit" aria-label="${t('send')}" ${state.chatBusy?'disabled':''}>↑</button></form>`;};
 askPreset=i=>startChat({text:t('prompts')[i]});
 askFree=function(){const value=document.getElementById('chat-input').value.trim();if(value)startChat({text:value});};
-function askFollowup(index,i){const text=state.chatTurns[index]?.result?.followups[i];if(text)startChat({text});}
+function askFollowup(index,i){const source=state.chatTurns[index]?.result;const text=source&&(resultLanguages.get(source)?.versions[state.lang]||source).followups[i];if(text)startChat({text});}
 function retryChat(index){
  if(state.chatBusy)return;
  const turn=state.chatTurns[index];if(turn?.role!=='error')return;
@@ -134,14 +136,14 @@ function clearChatBrand(){state.brandFilter=null;state.query='';state.category='
 function addChatResult(index){const result=state.chatTurns[index]?.result;if(!result)return;[...new Set(result.items.map(p=>p.id))].filter(id=>getProduct(id)).forEach(id=>addLine(id,getProduct(id).oneSize?'ONE':'M'));render();toast(t('cartAddedAll'));}
 startChat=async function(chat){
  const text=String(chat.text||'').trim().slice(0,1000);if(!text||state.chatBusy)return;
- const controller=new AbortController();sceneController=controller;
+ const controller=new AbortController();sceneController=controller;const resultLang=state.lang;
  state.chatTurns.push({role:'user',content:text});state.chatHistory.push({role:'user',content:text});state.chatBusy=true;renderAI();
  try{
   const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:state.chatHistory.slice(-10),lang:state.lang}),signal:controller.signal});
   const data=await response.json().catch(()=>null);if(!response.ok)throw Object.assign(new Error('CHAT_FAILED'),{code:data?.error||'upstream'});
   if(!data||typeof data.reply!=='string'||!Array.isArray(data.items)||!Array.isArray(data.followups)||!Array.isArray(data.brands)||!Number.isFinite(data.total))throw new Error('INVALID_RESULT');
   if(sceneController!==controller)return;
-  state.chatTurns.push({role:'assistant',result:data});
+  rememberResultLanguage(data,resultLang);state.chatTurns.push({role:'assistant',result:data});
   state.chatHistory.push({role:'assistant',content:data.reply+'\\n[items: '+data.items.map(p=>p.id).join(', ')+'][brands: '+data.brands.map(b=>b.id).join(', ')+']'});
   state.chatHistory=state.chatHistory.slice(-40);
  }catch(e){
@@ -155,3 +157,48 @@ addOutfit=()=>addAIResult('scene');
 
 copy.ko.aboutBody='MUSINSA 차이나 · 학술제 시연용 콘셉트\n사진 분석과 상황별 코디는 연결된 OpenAI API를 사용합니다.\n상품·가격·매장·재고·예약은 시연용 데이터이며 실제 주문은 접수되지 않습니다.';
 copy.zh.aboutBody='MUSINSA 中国 · 学术展示概念\n图片分析与场景穿搭通过已配置的OpenAI API提供。\n商品、价格、门店、库存和预约为演示数据，不会产生真实订单。';
+
+Object.assign(aiCopy.ko,{translating:'분석 결과를 한국어로 번역 중…',translationFailed:'번역하지 못했습니다. 현재 원문을 표시합니다.',translationRetry:'번역 다시 시도'});
+Object.assign(aiCopy.zh,{translating:'正在将分析结果翻译为中文…',translationFailed:'翻译失败，暂时显示原文。',translationRetry:'重试翻译'});
+const resultLanguages=new WeakMap();
+function rememberResultLanguage(result,lang){resultLanguages.set(result,{versions:{[lang]:result},pending:new Set(),errors:new Set()});return result;}
+function translationFields(result){
+  const paths=[];
+  const add=path=>{let value=result;for(const key of path)value=value[key];if(typeof value==='string'&&value.trim())paths.push(path);};
+  for(const key of ['summary','reply'])if(typeof result[key]==='string')add([key]);
+  for(const key of ['tags','followups'])(result[key]||[]).forEach((_,index)=>add([key,index]));
+  (result.items||[]).forEach((item,index)=>{for(const key of ['garment','color','details','reason'])if(typeof item[key]==='string')add(['items',index,key]);});
+  (result.brandSuggestions||[]).forEach((_,index)=>add(['brandSuggestions',index,'reason']));
+  return paths;
+}
+function translatedResult(result){
+  let record=resultLanguages.get(result);
+  if(!record){rememberResultLanguage(result,state.lang);record=resultLanguages.get(result);}
+  const lang=state.lang;
+  if(record.versions[lang])return record.versions[lang];
+  if(!record.pending.has(lang)&&!record.errors.has(lang)){
+    record.pending.add(lang);
+    const paths=translationFields(result);
+    const texts=paths.map(path=>path.reduce((value,key)=>value[key],result));
+    (async()=>{try{
+      const response=await fetch('/api/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang,texts})});
+      const data=await response.json();
+      if(!response.ok||!Array.isArray(data.translations)||data.translations.length!==paths.length||data.translations.some(value=>typeof value!=='string'))throw new Error('TRANSLATION_FAILED');
+      const translated=JSON.parse(JSON.stringify(result));
+      paths.forEach((path,index)=>{const parent=path.slice(0,-1).reduce((value,key)=>value[key],translated);parent[path[path.length-1]]=data.translations[index];});
+      record.versions[lang]=translated;
+    }catch{record.errors.add(lang);}
+    finally{record.pending.delete(lang);if(state.tab==='ai')renderAI();}})();
+  }
+  return record.errors.has(lang)?result:null;
+}
+function translationNotice(result){
+  const record=resultLanguages.get(result);
+  return record?.errors.has(state.lang)?`<p class="ai-error" role="alert">${at('translationFailed')}</p><button type="button" class="prompt" onclick="retryResultTranslations()">${at('translationRetry')}</button>`:'';
+}
+function retryResultTranslations(){
+  const results=[state.photoResult,...state.chatTurns.filter(turn=>turn.role==='assistant').map(turn=>turn.result)].filter(Boolean);
+  results.forEach(result=>resultLanguages.get(result)?.errors.delete(state.lang));
+  renderAI();
+}
+function translationLoader(){return `<div class="loader" role="status"><span class="spinner"></span>${at('translating')}</div>`;}
