@@ -56,3 +56,9 @@ test('adding only an outer layer leaves the existing outfit intact',()=>{
  assert.deepEqual(out.items.map(p=>p.id),[1,3,11,6]);assert.equal(out.total,3268);
  const changed=normalizeChat({reply:'추천',items:[1],brands:[],followups:[],budget:500},'ko',{last:'예산을 800으로 늘려줘',context:{budget:500}});assert.equal(changed.budget,800);
 });
+test('partial-edit provider schema excludes replacements that exceed the remaining budget',async()=>{
+ const {default:handler}=await import('../api/chat.js');const oldFetch=globalThis.fetch,oldKey=process.env.OPENAI_API_KEY;process.env.OPENAI_API_KEY='test';
+ globalThis.fetch=async(url,options)=>{const request=JSON.parse(options.body);const ids=request.text.format.schema.properties.items.items.enum;assert.ok(ids.includes(1)&&ids.includes(3)&&ids.includes(42));assert.ok(!ids.includes(9)&&!ids.includes(2));assert.match(request.instructions,/CURRENT EDIT: Change only type shoes/);return {ok:true,json:async()=>({status:'completed',output:[{type:'message',content:[{type:'output_text',text:JSON.stringify({reply:'신발 변경',items:[1,3,42],brands:[],followups:[],budget:600,context:{situation:'등교',preferences:'편하게'}})}]}]})};};
+ const req={method:'POST',headers:{'content-type':'application/json',host:'demo.example'},body:{messages:[{role:'user',content:'신발만 바꿔줘'}],context:{budget:600,itemIds:[1,3,11]}}};const res={setHeader(){},status(n){this.statusCode=n;return this;},json(value){this.body=value;return this;}};
+ try{await handler(req,res);assert.equal(res.statusCode,200);assert.deepEqual(res.body.items.map(p=>p.id),[1,3,42]);assert.equal(res.body.total,537);}finally{globalThis.fetch=oldFetch;if(oldKey===undefined)delete process.env.OPENAI_API_KEY;else process.env.OPENAI_API_KEY=oldKey;}
+});

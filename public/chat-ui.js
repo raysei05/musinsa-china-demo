@@ -12,7 +12,7 @@ chatResultUI=function(result,index){
  const latest=!state.chatBusy&&index===state.chatTurns.length-1;
  const items=result.items.map(p=>getProduct(p.id)).filter(Boolean);
  const products=items.length?`<div class="chat-products">${items.map(compactChatProduct).join('')}</div><div class="chat-total"><span>${at('total')}</span><strong>${price(result.total)}</strong></div><button type="button" class="black-button chat-add" onclick="addChatResult(${index})">${at('add')}</button>`:'';
- const brands=(result.brands||[]).length?`<div class="chat-brand-links">${result.brands.map((brand,i)=>`<button type="button" class="chat-suggestion" onclick="openChatBrand(${index},${i})">${esc(brand.name)} ${at('brandStore')} ↗</button>`).join('')}</div>`:'';
+ const brands=!items.length&&(result.brands||[]).length?`<div class="chat-brand-links">${result.brands.map((brand,i)=>`<button type="button" class="chat-suggestion" onclick="openChatBrand(${index},${i})">${esc(brand.name)} ${at('brandStore')} ↗</button>`).join('')}</div>`:'';
  const recommendation=products+brands;
  const followups=latest&&result.followups.length?`<div class="chat-followups">${result.followups.slice(0,2).map((q,i)=>`<button type="button" class="chat-suggestion" onclick="askFollowup(${index},${i})">${esc(q)} ↗</button>`).join('')}</div>`:'';
  return `<div class="chat-assistant">${translationNotice(original)}${!translated?`<p class="tiny" role="status">${at('translating')}</p>`:''}<div class="bubble-ai">${esc(result.reply)}</div>${recommendation?(latest?recommendation:`<details class="chat-previous"><summary>${at('previousOutfit')}</summary>${recommendation}</details>`):''}${followups}</div>`;
