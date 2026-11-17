@@ -1,6 +1,6 @@
 # MUSINSA 차이나 · Vercel 배포 프로젝트
 
-상품 사진 61종(패션 55개, 뷰티 6개)과 UI를 제공하고, OpenAI 기반 사진 분석·상황별 코디를 연결한 프로젝트입니다. 등록 카탈로그 안에서 유사 상품을 추천합니다. 외부 쇼핑몰·Google Lens 검색 연동은 포함하지 않습니다.
+상품 사진 81종(패션 75개, 뷰티 6개)과 UI를 제공하고, OpenAI 기반 사진 분석·상황별 코디를 연결한 프로젝트입니다. 등록 카탈로그 안에서 유사 상품을 추천합니다. 외부 쇼핑몰·Google Lens 검색 연동은 포함하지 않습니다.
 
 ## Vercel에 올리기
 
@@ -28,7 +28,7 @@
 
 - `public/index.html`: 기존 화면
 - `public/ai.js`, `public/ai.css`: 실제 분석 결과 화면·업로드·요청 처리
-- `public/assets/products/`: 개별 WebP 상품 사진 61개 (합계 약 471KB, 최대 480px)
+- `public/assets/products/`: 개별 WebP 상품 사진 81개 (합계 약 628KB, 최대 480px)
 - `public/catalog.js`: `node scripts/sync-catalog.mjs`로 생성하는 추가 상품·이미지 경로
 - `scripts/image-prompts.json`: 추가 상품 사진 생성 프롬프트의 품목별 주제
 - `api/analyze.js`: Vercel 서버 함수, 서버 전용 API 호출
@@ -48,6 +48,6 @@ Node.js 22 이상에서 `npm test`로 서버 검증을 실행합니다.
 
 ## 기본템 카탈로그 확장
 
-상의·하의·스커트·원피스·아우터·신발·가방·액세서리 40종을 추가했습니다. 상품 사진은 생성형 AI로 만든 시연용 가상 이미지이며, 실제 브랜드 제품 사진이 아닙니다. 기존 12종 연락판은 상품별로 분리하고 모든 사진을 WebP(최대 480px, 품질 80~82)로 변환했습니다. 이미지에는 `loading="lazy"`, `decoding="async"`를 적용했습니다. WebP 파일 크기는 전송·저장 용량이며, 디코딩된 메모리 사용량과는 다릅니다.
+상의·하의·스커트·원피스·아우터·신발·가방·액세서리 60종을 추가했습니다. 상품 사진은 생성형 AI로 만든 시연용 가상 이미지이며, 실제 브랜드 제품 사진이 아닙니다. 기존 12종 연락판은 상품별로 분리하고 모든 사진을 WebP(최대 480px, 품질 80~82)로 변환했습니다. 이미지에는 `loading="lazy"`, `decoding="async"`를 적용했습니다. WebP 파일 크기는 전송·저장 용량이며, 디코딩된 메모리 사용량과는 다릅니다.
 
 상품 정보를 수정한 후 `node scripts/sync-catalog.mjs`와 `npm test`를 실행하세요. 새 품목은 `lib/catalog.json`의 `type` 및 `visualDescription`을 통해 사진 분석과 대화형 코디에서도 사용됩니다.

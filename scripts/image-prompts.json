@@ -161,6 +161,90 @@
     {
       "id": 55,
       "subject": "a pair of plain white ribbed cotton crew socks"
+    },
+    {
+      "id": 56,
+      "subject": "plain white cotton long sleeve crewneck T-shirt"
+    },
+    {
+      "id": 57,
+      "subject": "plain black cotton full zip hoodie"
+    },
+    {
+      "id": 58,
+      "subject": "oatmeal beige V-neck sleeveless knit sweater vest"
+    },
+    {
+      "id": 59,
+      "subject": "white long sleeve round neck blouse with small front buttons and gathered cuffs",
+      "edit": "Remove all separate surrounding products and their shadows; center only the original garment on the same plain background."
+    },
+    {
+      "id": 60,
+      "subject": "plain navy cotton pique short sleeve polo shirt"
+    },
+    {
+      "id": 61,
+      "subject": "beige linen relaxed short sleeve button down shirt"
+    },
+    {
+      "id": 62,
+      "subject": "khaki olive green wide leg cargo trousers with large side flap pockets",
+      "edit": "Remove all separate surrounding products and their shadows; center only the original garment on the same plain background."
+    },
+    {
+      "id": 63,
+      "subject": "dark indigo blue unwashed straight leg denim jeans",
+      "edit": "Remove all separate surrounding products and their shadows; center only the original garment on the same plain background."
+    },
+    {
+      "id": 64,
+      "subject": "beige cotton above knee straight shorts with belt loops"
+    },
+    {
+      "id": 65,
+      "subject": "black pleated mini skirt"
+    },
+    {
+      "id": 66,
+      "subject": "medium gray finely pleated midi skirt",
+      "edit": "Remove all separate surrounding products and their shadows; center only the original garment on the same plain background."
+    },
+    {
+      "id": 67,
+      "subject": "cream fleece full zip jacket with stand collar"
+    },
+    {
+      "id": 68,
+      "subject": "brown suede collared zip front jacket"
+    },
+    {
+      "id": 69,
+      "subject": "black leather biker jacket with asymmetric silver zipper and lapels"
+    },
+    {
+      "id": 70,
+      "subject": "light gray nylon stand collar zip windbreaker without hood"
+    },
+    {
+      "id": 71,
+      "subject": "a pair of brown suede ankle height lace up desert boots with crepe soles"
+    },
+    {
+      "id": 72,
+      "subject": "a pair of beige suede low top sneakers with gum rubber soles"
+    },
+    {
+      "id": 73,
+      "subject": "plain black cotton bucket hat"
+    },
+    {
+      "id": 74,
+      "subject": "black rectangular acetate frame sunglasses with dark lenses"
+    },
+    {
+      "id": 75,
+      "subject": "black pebbled leather compact zip card wallet with card slots"
     }
   ]
 }
