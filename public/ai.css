@@ -11,3 +11,13 @@ button.upload-box{width:100%;cursor:pointer;font:inherit;color:inherit}button.up
 .result-tier{font-size:10px;letter-spacing:.4px;color:var(--muted);margin:8px 0}.external-link{display:block;color:var(--ink);font-size:11px;line-height:1.7;margin:12px 0;text-decoration:underline;text-underline-offset:3px}
 
 .photo-brand-suggestions{margin-top:24px}.photo-brand-suggestion{padding:14px 0;border-bottom:1px solid var(--line)}.photo-tier-empty{margin-top:18px;padding:15px;border:1px solid var(--line);border-radius:12px;font-size:12px;line-height:1.9}
+
+/* Compact chat history and a composer outside the scrolling conversation. */
+.chat-scroll{overflow-anchor:none}.chat-scene{padding-bottom:16px}.chat-turn{display:flow-root}
+.chat-products{margin-top:10px;display:grid;gap:7px}.chat-product{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:10px;padding:8px;background:#ffffff55;min-height:70px}
+.chat-product .rank-box.product-photo{width:52px;height:52px;flex:none}.chat-product-copy{flex:1;min-width:0;font-size:11px;line-height:1.6}.chat-product-copy small{display:block;font:8px/1.6 Arial,sans-serif;color:var(--muted);overflow-wrap:anywhere}.chat-product strong{flex:none;font:600 12px Arial,sans-serif}
+.chat-total{display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;font-size:11px}.chat-total strong{font:600 18px Arial,sans-serif}.chat-add{min-height:42px;padding:10px;font-size:12px;margin-top:8px}
+.chat-previous{margin-top:9px;border:1px solid var(--line);border-radius:10px;padding:10px}.chat-previous summary{cursor:pointer;font-size:11px;color:var(--muted)}.chat-previous[open] summary{margin-bottom:10px}
+.chat-suggestion{display:inline-flex;align-items:center;max-width:100%;text-align:left;padding:8px 10px;border:1px solid #cfcfc7;border-radius:18px;font-size:11px;line-height:1.5;min-height:36px}.chat-suggestion:disabled{opacity:.45;cursor:wait}.chat-followups,.chat-brand-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chat-composer{flex:none;padding:9px 16px 10px;background:var(--paper);border-top:1px solid var(--line)}.chat-composer[hidden]{display:none}.chat-composer .chat-form{margin:0;gap:8px}.chat-composer input{min-height:44px;font-size:14px}.chat-composer .chat-form button{min-height:44px}.chat-new-messages{display:block;border:1px solid #bdbdb4;border-radius:18px;background:var(--paper);padding:7px 12px;margin:0 auto 8px;font-size:11px}.chat-new-messages[hidden]{display:none}
+@media(max-width:430px){.chat-composer input{font-size:16px}}

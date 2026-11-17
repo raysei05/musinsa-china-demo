@@ -22,7 +22,7 @@
 .rank-box.product-photo,.outfit-item .rank-box.product-photo{width:52px;height:52px;border-radius:8px}
 .product-photo .product-number{background:#ffffffc9;padding:3px 5px;border-radius:4px;color:#444;top:8px;left:8px}
 </style>
-<link rel="stylesheet" href="/ai.css?v=result-translation-10">
+<link rel="stylesheet" href="/ai.css?v=chat-flow-11">
 </head>
 <body>
 <main class="stage">
@@ -31,6 +31,7 @@
   <div class="status"><span id="status-clock"></span><span class="status-icons"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 15v-2m5 2V9m5 6V6m5 9V3" stroke-width="2.5"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7q8-7 16 0M5 10q5-4 10 0M8 13q2-2 4 0M10 16h.01"/></svg><span class="battery"></span></span></div>
   <header class="appbar"><div class="wordmark">MUSINSA <small id="country"></small></div><div class="top-actions"><button id="language" class="language" onclick="toggleLanguage()"></button><div class="capsule"><button id="more" onclick="showAbout()">···</button><i></i><button id="exit" onclick="goHome()">◎</button></div></div></header>
   <div class="scroll" id="content"></div>
+  <div id="chat-composer" class="chat-composer" hidden></div>
   <nav class="tabbar" id="tabbar"></nav><div class="home-indicator"></div>
   <div id="modal"></div><div id="toast" role="status" aria-live="polite"></div>
  </section>
@@ -178,5 +179,6 @@ setInterval(updateStatusClock,1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateStatusClock();});
 </script>
 <script src="/ai.js?v=result-translation-10"></script>
+<script src="/chat-ui.js?v=chat-flow-11"></script>
 </body>
 </html>
